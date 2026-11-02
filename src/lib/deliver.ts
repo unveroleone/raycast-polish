@@ -16,12 +16,9 @@ tell application "System Events"
   end try
   if elementRole is in {"AXTextField", "AXTextArea", "AXComboBox", "AXSearchField"} then return "editable"
   try
-    if settable of attribute "AXValue" of focusedElement then return "editable"
-  end try
-  try
     if value of attribute "AXEditableAncestor" of focusedElement is not missing value then return "editable"
   end try
-  if elementRole is in {"AXWebArea", "AXStaticText", "AXScrollArea", "AXList", "AXTable", "AXOutline", "AXImage", "AXButton", "AXLink", "AXWindow"} then return "readonly"
+  if elementRole is in {"AXStaticText", "AXScrollArea", "AXList", "AXTable", "AXOutline", "AXImage", "AXButton", "AXLink", "AXWindow"} then return "readonly"
   return "unknown"
 end tell`;
 

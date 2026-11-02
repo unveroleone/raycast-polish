@@ -4,11 +4,17 @@
 const LIST_ITEM = /^( *)([-*+•]|\d+[.)])\s+/;
 const FENCE = /^ *(```|~~~)/;
 const STRUCTURAL = /^ *(#{1,6} |>|\||<)/;
+// Two or more spaces between words mean aligned columns (ls -l, ps, docker ps), not prose.
+const COLUMNS = /\S {2,}\S/;
+// Chinese, Japanese and Korean have no spaces between words, so wrapped lines join without one.
+const CJK_END = /[\u2e80-\u9fff\uac00-\ud7af\uf900-\ufaff\uff00-\uffef]$/;
+const CJK_START = /^[\u2e80-\u9fff\uac00-\ud7af\uf900-\ufaff\uff00-\uffef]/;
 
 interface Block {
   indent: number;
   textIndent: number;
   lastLength: number;
+  columnar: boolean;
 }
 
 const indentOf = (line: string) => line.match(/^ */)![0].length;
@@ -33,6 +39,9 @@ export function cleanUpText(input: string): string {
   // Hard-wrapped lines end close to the terminal width. A shorter line ends its paragraph on purpose.
   const maxLength = Math.max(...dedented.map((line) => line.length));
   const wrapThreshold = Math.max(40, Math.floor(maxLength * 0.6));
+
+  // An odd number of fences means the selection starts or ends inside a code block. Only dedent then.
+  const canMerge = dedented.filter((line) => FENCE.test(line)).length % 2 === 0;
 
   const out: string[] = [];
   let block: Block | undefined;
@@ -59,14 +68,18 @@ export function cleanUpText(input: string): string {
     const listItem = line.match(LIST_ITEM);
     const structural = STRUCTURAL.test(line);
 
-    if (block && !listItem && !structural) {
+    const columnar = COLUMNS.test(line.trim());
+
+    if (canMerge && block && !listItem && !structural && !columnar && !block.columnar) {
       // Continuation of a list item: indented under the item's text, like "  - text\n    more text".
       const listContinuation = indent > block.indent && indent >= block.textIndent;
       // Continuation of a paragraph: same indent and the previous line was wrapped at the width.
       const paragraphContinuation = indent === block.indent && block.lastLength >= wrapThreshold;
 
       if (listContinuation || paragraphContinuation) {
-        out[out.length - 1] += ` ${line.trim()}`;
+        const previous = out[out.length - 1];
+        const next = line.trim();
+        out[out.length - 1] = previous + (CJK_END.test(previous) && CJK_START.test(next) ? "" : " ") + next;
         block.lastLength = line.length;
         continue;
       }
@@ -75,7 +88,7 @@ export function cleanUpText(input: string): string {
     out.push(line);
     block = structural
       ? undefined
-      : { indent, textIndent: listItem ? listItem[0].length : indent, lastLength: line.length };
+      : { indent, textIndent: listItem ? listItem[0].length : indent, lastLength: line.length, columnar };
   }
 
   const trailingNewlines = input.match(/\n*$/)![0];

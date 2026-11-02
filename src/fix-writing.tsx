@@ -1,5 +1,5 @@
 import { Action, ActionPanel, Detail, getSelectedText, Icon, Keyboard, showToast, Toast } from "@raycast/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { deliver } from "./lib/deliver";
 import { fixText, getModels } from "./lib/llm";
 
@@ -23,6 +23,20 @@ export default function Command() {
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState(true);
   const [runId, setRunId] = useState(0);
+  // Guards against pressing Enter twice, which would paste the text twice.
+  const deliveringRef = useRef(false);
+
+  const pasteResult = async () => {
+    if (deliveringRef.current) return;
+    deliveringRef.current = true;
+    try {
+      await deliver(result, "Text fixed");
+    } catch (e) {
+      await showToast({ style: Toast.Style.Failure, title: "Could not paste", message: (e as Error).message });
+    } finally {
+      deliveringRef.current = false;
+    }
+  };
 
   useEffect(() => {
     getSelectedText()
@@ -97,7 +111,7 @@ export default function Command() {
         <ActionPanel>
           {canPaste && (
             <>
-              <Action title="Paste Fixed Text" icon={Icon.Clipboard} onAction={() => deliver(result, "Text fixed")} />
+              <Action title="Paste Fixed Text" icon={Icon.Clipboard} onAction={pasteResult} />
               <Action.CopyToClipboard title="Copy Fixed Text" content={result} />
             </>
           )}
