@@ -26,6 +26,13 @@
       "subtitle": "No Preview",
       "description": "Fix the selected text and replace it right away, without a preview.",
       "mode": "no-view"
+    },
+    {
+      "name": "clean-up-text",
+      "title": "Clean up Text",
+      "subtitle": "Terminal Copy",
+      "description": "Remove indentation and join hard-wrapped lines of text copied from a terminal. No AI, works instantly.",
+      "mode": "no-view"
     }
   ],
   "preferences": [

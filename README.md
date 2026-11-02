@@ -15,6 +15,7 @@ Most AI writing extensions for Raycast show the result in a window and leave you
 
 - **Fix Writing**: shows the fixed text next to the original. Press `Enter` to paste it over your selection, `Cmd+R` to retry, `Cmd+M` to switch model.
 - **Fix Writing Instantly**: no preview, replaces the selection right away with the first model. Good for a hotkey.
+- **Clean up Text**: for text copied from a terminal. Removes the extra left indent and joins hard-wrapped lines back into sentences, while keeping lists, blank lines and code blocks. Runs in code without AI, so it is instant and never changes a word. Use it only on wrapped text, since on normal text it can merge lines you meant to keep apart.
 
 ## Setup
 
