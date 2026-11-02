@@ -24,10 +24,10 @@ Needs Node 22+, pnpm and Raycast.
 git clone https://github.com/unveroleone/raycast-fix-writing.git
 cd raycast-fix-writing
 pnpm install
-pnpm build
+pnpm dev
 ```
 
-`pnpm build` installs the extension into Raycast (`~/.config/raycast/extensions/fix-writing`). Run it again after changes. Use `pnpm dev` only if you want hot reload while editing.
+Wait for `built extension successfully`, then stop it with `Ctrl+C`. The extension stays in Raycast. On a new Mac this first `pnpm dev` is required, because it registers the extension with Raycast. After that, `pnpm build` is enough to update it.
 
 Then set the preferences (Raycast Settings > Extensions > Fix Writing):
 
