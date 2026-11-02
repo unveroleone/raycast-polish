@@ -51,8 +51,13 @@ export default function Command() {
 
     const toast = showToast({ style: Toast.Style.Animated, title: `Fixing with ${model}...` });
 
-    fixText(original, model, { onUpdate: setResult, signal: controller.signal })
+    const onUpdate = (partial: string) => {
+      if (!controller.signal.aborted) setResult(partial);
+    };
+
+    fixText(original, model, { onUpdate, signal: controller.signal })
       .then(async (fixed) => {
+        if (controller.signal.aborted) return;
         setResult(fixed);
         (await toast).hide();
       })
@@ -68,7 +73,10 @@ export default function Command() {
         if (!controller.signal.aborted) setIsLoading(false);
       });
 
-    return () => controller.abort();
+    return () => {
+      controller.abort();
+      toast.then((t) => t.hide());
+    };
   }, [original, model, runId]);
 
   const markdown = error

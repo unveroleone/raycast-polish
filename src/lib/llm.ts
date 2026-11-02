@@ -67,19 +67,32 @@ function buildSystemPrompt(): string {
   return parts.join("\n\n");
 }
 
+let cachedAgent: { url: string; agent: ProxyAgent } | undefined;
+
+function getProxyAgent(url: string): ProxyAgent {
+  if (cachedAgent?.url !== url) {
+    cachedAgent?.agent.close().catch(() => undefined);
+    cachedAgent = { url, agent: new ProxyAgent(url) };
+  }
+  return cachedAgent.agent;
+}
+
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
 // Node's built-in fetch ignores system proxy settings, so route requests through the proxy explicitly.
 async function proxyOptions(baseURL: string): Promise<Pick<ClientOptions, "fetch" | "fetchOptions">> {
   const { proxyUrl } = getPreferenceValues<Preferences>();
-  const url = proxyUrl?.trim() || process.env.HTTPS_PROXY || process.env.https_proxy;
+  let url = proxyUrl?.trim() || process.env.HTTPS_PROXY || process.env.https_proxy;
   if (!url) return {};
+  // Accept the common "host:port" form.
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(url)) url = `http://${url}`;
 
   let proxyHost: string;
   try {
     proxyHost = new URL(url).hostname;
   } catch {
-    throw new Error(`Invalid proxy URL: ${url}`);
+    // Do not echo the URL, it may contain credentials.
+    throw new Error("Invalid proxy URL. Use a format like http://host:port.");
   }
 
   // Local providers are reached directly, never through the proxy.
@@ -98,7 +111,7 @@ async function proxyOptions(baseURL: string): Promise<Pick<ClientOptions, "fetch
 
   return {
     fetch: undiciFetch as unknown as ClientOptions["fetch"],
-    fetchOptions: { dispatcher: new ProxyAgent(url) } as ClientOptions["fetchOptions"],
+    fetchOptions: { dispatcher: getProxyAgent(url) } as ClientOptions["fetchOptions"],
   };
 }
 
@@ -113,15 +126,20 @@ async function createClient(): Promise<OpenAI> {
   });
 }
 
-// Reasoning models on some providers return their thinking inline. Hide it, including an unfinished block while streaming.
+// Reasoning models on some providers return their thinking inline, always before the answer. Hide only that leading
+// block (including an unfinished one while streaming), so a literal "<think>" in the user's text survives.
 function stripThinking(text: string): string {
-  return text.replace(/<think>[\s\S]*?(<\/think>|$)/g, "");
+  return text.replace(/^\s*<think>[\s\S]*?(<\/think>|$)/, "");
 }
 
 // Swiss spelling from the human writing rules. Enforced in code because models tend to "correct" ss back to ß.
 function applyHumanWriting(text: string): string {
   if (!getPreferenceValues<Preferences>().humanWriting) return text;
-  return text.replace(/ß/g, "ss").replace(/ẞ/g, "SS");
+  // Code, URLs and email addresses are matched first and kept as they are, so links do not break.
+  return text.replace(
+    /(```[\s\S]*?```|`[^`\n]*`|\b(?:https?:\/\/|www\.)\S+|[^\s@]+@[^\s@]+\.[^\s@]+)|ß|ẞ/g,
+    (match, kept?: string) => kept ?? (match === "ß" ? "ss" : "SS"),
+  );
 }
 
 // Models tend to drop leading/trailing whitespace. Restore the original padding so the paste fits in place.
