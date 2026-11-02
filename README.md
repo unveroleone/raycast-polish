@@ -17,6 +17,21 @@ Most AI writing extensions for Raycast show the result in a window and leave you
 - **Fix Writing Instantly**: no preview, replaces the selection right away with the first model. Good for a hotkey.
 - **Clean up Text**: for text copied from a terminal. Removes the extra left indent and joins hard-wrapped lines back into sentences, while keeping lists, blank lines and code blocks. Runs in code without AI, so it is instant and never changes a word. Use it only on wrapped text, since on normal text it can merge lines you meant to keep apart.
 
+## Pasting and the clipboard fallback
+
+All three commands put the result back the same way. Before pasting, the extension asks macOS (through the accessibility API) what kind of element has focus in the app you selected the text in:
+
+| Focused element | What happens |
+| --- | --- |
+| Text field, text area or editable web content | The result is pasted over your selection |
+| Read-only element, e.g. a label, list or button | The result is copied to the clipboard instead |
+| Unclear, e.g. a web page or a custom control | The result is pasted and also copied, so it is never lost |
+| Pasting fails | The result is copied to the clipboard |
+
+A short message tells you which one happened. Turn on **Clipboard** in the preferences to copy every result as well. Copying replaces whatever was on your clipboard before.
+
+Raycast needs accessibility access for this (System Settings > Privacy & Security > Accessibility). It already uses that permission to read your selected text.
+
 ## Setup
 
 Needs Node 22+, pnpm and Raycast.
