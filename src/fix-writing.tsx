@@ -1,5 +1,6 @@
 import { Action, ActionPanel, Detail, getSelectedText, Icon, Keyboard, showToast, Toast } from "@raycast/api";
 import { useEffect, useState } from "react";
+import { deliver } from "./lib/deliver";
 import { fixText, getModels } from "./lib/llm";
 
 function toMarkdown(fixed: string, original: string): string {
@@ -96,7 +97,7 @@ export default function Command() {
         <ActionPanel>
           {canPaste && (
             <>
-              <Action.Paste title="Paste Fixed Text" content={result} />
+              <Action title="Paste Fixed Text" icon={Icon.Clipboard} onAction={() => deliver(result, "Text fixed")} />
               <Action.CopyToClipboard title="Copy Fixed Text" content={result} />
             </>
           )}

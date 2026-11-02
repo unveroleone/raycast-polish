@@ -38,6 +38,7 @@ Then set the preferences (Raycast Settings > Extensions > Fix Writing):
 | API Key | your key, empty for Ollama or LM Studio |
 | Models | `gpt-4o-mini, deepseek-chat` (first one is the default) |
 | Proxy URL | `http://proxy.example.com:8080`, only needed on networks that block direct connections |
+| Clipboard | off by default: also copy every result. Without it, the result is only copied when there is no text field to paste into or pasting fails |
 | Writing Style | on by default: removes em dashes, AI-sounding words and filler |
 | Extra Instructions | `Use Swiss spelling (ss instead of ß).` |
 | Instructions File | a `.md` style guide for longer rules |

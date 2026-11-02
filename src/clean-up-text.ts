@@ -1,5 +1,6 @@
-import { Clipboard, closeMainWindow, getSelectedText, showHUD } from "@raycast/api";
+import { closeMainWindow, getSelectedText, showHUD } from "@raycast/api";
 import { cleanUpText } from "./lib/clean-up";
+import { deliver } from "./lib/deliver";
 
 export default async function Command() {
   let text: string;
@@ -21,6 +22,5 @@ export default async function Command() {
     await showHUD("Nothing to clean up");
     return;
   }
-  await Clipboard.paste(cleaned);
-  await showHUD("Text cleaned up");
+  await deliver(cleaned, "Text cleaned up");
 }

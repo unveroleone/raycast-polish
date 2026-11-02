@@ -80,6 +80,15 @@
       "default": true
     },
     {
+      "name": "alwaysCopy",
+      "title": "Clipboard",
+      "label": "Also copy the result to the clipboard",
+      "description": "Copy every result to the clipboard in addition to pasting it. Without this, it only copies when there is no text field to paste into or pasting fails.",
+      "type": "checkbox",
+      "required": false,
+      "default": false
+    },
+    {
       "name": "instructions",
       "title": "Extra Instructions",
       "description": "Optional rules added to the built-in prompt, e.g. 'Use Swiss German spelling (ss instead of ß). Keep it casual.'",
