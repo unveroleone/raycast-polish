@@ -1,8 +1,8 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "fix-writing",
-  "title": "Fix Writing",
-  "description": "Fix spelling and grammar of the selected text with any OpenAI-compatible provider and paste it back in place.",
+  "name": "polish",
+  "title": "Polish",
+  "description": "Fix the selected text with any OpenAI-compatible provider and paste it back in place, plus a cleanup for text copied from a terminal.",
   "icon": "icon.png",
   "author": "leo",
   "categories": [

@@ -1,6 +1,6 @@
-# Fix Writing
+# Polish
 
-Local Raycast extension that fixes spelling and grammar of the selected text with any OpenAI-compatible provider and pastes the result back in place.
+Raycast extension that fixes spelling and grammar of the selected text with any OpenAI-compatible provider and pastes the result back in place. It also cleans up text copied from a terminal.
 
 ## Why this one
 
@@ -37,15 +37,15 @@ Raycast needs accessibility access for this (System Settings > Privacy & Securit
 Needs Node 22+, pnpm and Raycast.
 
 ```sh
-git clone https://github.com/unveroleone/raycast-fix-writing.git
-cd raycast-fix-writing
+git clone https://github.com/unveroleone/raycast-polish.git
+cd raycast-polish
 pnpm install
 pnpm dev
 ```
 
 Wait for `built extension successfully`, then stop it with `Ctrl+C`. The extension stays in Raycast. On a new Mac this first `pnpm dev` is required, because it registers the extension with Raycast. After that, `pnpm build` is enough to update it.
 
-Then set the preferences (Raycast Settings > Extensions > Fix Writing):
+Then set the preferences (Raycast Settings > Extensions > Polish):
 
 | Preference | Example |
 | --- | --- |
