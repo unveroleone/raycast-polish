@@ -1,40 +1,71 @@
-# Polish
+<p align="center">
+  <img src="media/banner.svg" alt="Polish: select text, press a hotkey, the fixed text is pasted back in place" width="100%">
+</p>
 
-Raycast extension that fixes spelling and grammar of the selected text with any OpenAI-compatible provider and pastes the result back in place. It also cleans up text copied from a terminal.
+<p align="center">
+  <a href="https://www.raycast.com"><img src="https://img.shields.io/badge/Raycast-extension-FF6363?logo=raycast&logoColor=white" alt="Raycast extension"></a>
+  <img src="https://img.shields.io/badge/macOS-only-000000?logo=apple&logoColor=white" alt="macOS">
+  <img src="https://img.shields.io/badge/API-OpenAI--compatible-6366f1" alt="OpenAI-compatible">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-34d399" alt="MIT license"></a>
+</p>
 
-## Why this one
+<p align="center">
+  <b>Select text anywhere. Press your hotkey. The fixed version replaces it.</b><br>
+  Works with OpenAI, DeepSeek, OpenRouter, Groq, Ollama or any other OpenAI-compatible API.
+</p>
 
-Most AI writing extensions for Raycast show the result in a window and leave you to copy it, and they are tied to one provider with a fixed model list. This one is built for the opposite workflow:
+---
 
-- **It replaces your text in place.** Press `Enter` in the preview and the fixed text goes straight over your selection. With **Fix Writing Instantly** there is no window at all: select, hit the hotkey, done.
-- **It works with any provider.** Anything that speaks the OpenAI API works, from OpenAI, DeepSeek and OpenRouter to Groq or a local Ollama model. You type in the model IDs you want instead of picking from a hardcoded dropdown, and you can switch between them with `Cmd+M`.
-- **The output reads like you wrote it.** The optional human writing rules strip em dashes, AI-sounding words ("crucial", "leverage", "delve") and filler phrases. In messages they also remove openers like "Quick question:" and turn numbered questions into normal sentences. Your tone and language stay as they are.
-- **You can add your own rules.** Put a one-line rule in the preferences or point it at a Markdown style guide.
+## Why Polish
+
+Most AI writing extensions for Raycast show the result in a window, leave the copying to you and lock you into one provider with a fixed model list. Polish goes the other way.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>Replaces your text in place</h3>
+      Press <code>Enter</code> in the preview and the fixed text lands right over your selection. <b>Fix Writing Instantly</b> skips the window completely: select, hotkey, done.
+    </td>
+    <td width="50%" valign="top">
+      <h3>Any provider, your models</h3>
+      Point it at any OpenAI-compatible endpoint, including a local Ollama. Type in the model IDs you want and switch between them with <code>Cmd+M</code>.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>Reads like you wrote it</h3>
+      Optional human writing rules strip em dashes, words like "crucial" or "delve" and empty filler. In messages they drop openers like "Quick question:". Your tone and language stay.
+    </td>
+    <td width="50%" valign="top">
+      <h3>Never loses your text</h3>
+      If there is no text field to paste into, or pasting fails, the result goes to your clipboard instead. A short message tells you which one happened.
+    </td>
+  </tr>
+</table>
 
 ## Commands
 
-- **Fix Writing**: shows the fixed text next to the original. Press `Enter` to paste it over your selection, `Cmd+R` to retry, `Cmd+M` to switch model.
-- **Fix Writing Instantly**: no preview, replaces the selection right away with the first model. Good for a hotkey.
-- **Clean up Text**: for text copied from a terminal. Removes the extra left indent and joins hard-wrapped lines back into sentences, while keeping lists, blank lines and code blocks. Runs in code without AI, so it is instant and never changes a word. Use it only on wrapped text, since on normal text it can merge lines you meant to keep apart.
-
-## Pasting and the clipboard fallback
-
-All three commands put the result back the same way. Before pasting, the extension asks macOS (through the accessibility API) what kind of element has focus in the app you selected the text in:
-
-| Focused element | What happens |
+| Command | What it does |
 | --- | --- |
-| Text field, text area or editable web content | The result is pasted over your selection |
-| Read-only element, e.g. a label, list or button | The result is copied to the clipboard instead |
-| Unclear, e.g. a web page or a custom control | The result is pasted and also copied, so it is never lost |
-| Pasting fails | The result is copied to the clipboard |
+| **Fix Writing** | Shows the fixed text above your original. `Enter` pastes it, `Cmd+R` retries, `Cmd+M` switches the model. |
+| **Fix Writing Instantly** | No window. Fixes the selection with your default model and replaces it. Best on a hotkey. |
+| **Clean up Text** | For text copied from a terminal. Removes the extra indent and joins hard-wrapped lines back into sentences, while keeping lists, tables and code blocks. Runs in code without AI, so it is instant and never changes a word. |
 
-A short message tells you which one happened. Turn on **Clipboard** in the preferences to copy every result as well. Copying replaces whatever was on your clipboard before.
+```text
+Before, copied from a terminal:
+  - URLs and code are now left alone by
+    the replacement.
+  - Markdown and line breaks stay as
+    they are.
 
-Raycast needs accessibility access for this (System Settings > Privacy & Security > Accessibility). It already uses that permission to read your selected text.
+After Clean up Text:
+- URLs and code are now left alone by the replacement.
+- Markdown and line breaks stay as they are.
+```
 
-## Setup
+## Install
 
-Needs Node 22+, pnpm and Raycast.
+You need macOS, [Raycast](https://www.raycast.com), Node 22+ and pnpm.
 
 ```sh
 git clone https://github.com/unveroleone/raycast-polish.git
@@ -43,19 +74,51 @@ pnpm install
 pnpm dev
 ```
 
-Wait for `built extension successfully`, then stop it with `Ctrl+C`. The extension stays in Raycast. On a new Mac this first `pnpm dev` is required, because it registers the extension with Raycast. After that, `pnpm build` is enough to update it.
+Wait for `built extension successfully`, then stop it with `Ctrl+C`. Polish stays in Raycast. The first `pnpm dev` registers the extension, after that `pnpm build` is enough to update it.
 
-Then set the preferences (Raycast Settings > Extensions > Polish):
+Then open **Raycast Settings > Extensions > Polish**, fill in your provider and give the commands a hotkey.
 
-| Preference | Example |
+## Providers
+
+| Provider | Base URL | Example models |
+| --- | --- | --- |
+| OpenAI | `https://api.openai.com/v1` | `gpt-4o-mini` |
+| OpenRouter | `https://openrouter.ai/api/v1` | `anthropic/claude-haiku-5.5, deepseek/deepseek-v4-flash` |
+| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| Ollama | `http://localhost:11434/v1` | `llama3.1` (no API key needed) |
+
+Put several models in one comma-separated list. The first one is the default.
+
+## Preferences
+
+| Preference | Default | Notes |
+| --- | --- | --- |
+| Provider Base URL | OpenAI | Any OpenAI-compatible endpoint |
+| API Key | empty | Leave empty for Ollama or LM Studio |
+| Models | `gpt-4o-mini` | Comma-separated, first one is the default |
+| Proxy URL | empty | Only for networks that block direct connections, e.g. `http://proxy.example.com:8080`. Skipped automatically when the proxy cannot be reached |
+| Clipboard | off | Copy every result too, not only when pasting is not possible |
+| Writing Style | on | Human writing rules: no em dashes, no AI-sounding words, Swiss `ss` instead of `ß` |
+| Extra Instructions | empty | One-line rule, e.g. `Use British English spelling.` |
+| Instructions File | empty | A `.md` or `.txt` style guide for longer rules |
+
+## How pasting works
+
+Before pasting, Polish asks macOS (through the accessibility API) what has focus in the app you selected the text in.
+
+| Focused element | What happens |
 | --- | --- |
-| Provider Base URL | `https://api.openai.com/v1`, `https://api.deepseek.com/v1`, `https://openrouter.ai/api/v1`, `http://localhost:11434/v1` |
-| API Key | your key, empty for Ollama or LM Studio |
-| Models | `gpt-4o-mini, deepseek-chat` (first one is the default) |
-| Proxy URL | `http://proxy.example.com:8080`, only needed on networks that block direct connections |
-| Clipboard | off by default: also copy every result. Without it, the result is only copied when there is no text field to paste into or pasting fails |
-| Writing Style | on by default: removes em dashes, AI-sounding words and filler |
-| Extra Instructions | `Use Swiss spelling (ss instead of ß).` |
-| Instructions File | a `.md` style guide for longer rules |
+| Text field, text area or editable web content | Pasted over your selection |
+| Read-only element, like a label, list or button | Copied to the clipboard instead |
+| Unclear, like a web page or a custom control | Pasted and copied, so it is never lost |
+| Pasting fails | Copied to the clipboard |
 
-Assign hotkeys to the commands in Raycast Settings to use them from any app.
+Raycast needs accessibility access for this (System Settings > Privacy & Security > Accessibility). It already uses that permission to read your selection.
+
+## Privacy
+
+Your selected text goes only to the provider you configured. There is no server in between and no tracking. The API key is stored in Raycast as a password preference and never ends up in this repo.
+
+## License
+
+[MIT](LICENSE)
