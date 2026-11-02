@@ -56,6 +56,14 @@
       "placeholder": "gpt-4o-mini, deepseek-chat"
     },
     {
+      "name": "proxyUrl",
+      "title": "Proxy URL",
+      "description": "Optional HTTP proxy for networks that block direct connections. Skipped automatically when the proxy host cannot be resolved, so it keeps working on other networks. Not used for localhost providers.",
+      "type": "textfield",
+      "required": false,
+      "placeholder": "http://proxy.example.com:8080"
+    },
+    {
       "name": "humanWriting",
       "title": "Writing Style",
       "label": "Human writing rules",
@@ -82,7 +90,8 @@
   ],
   "dependencies": {
     "@raycast/api": "^2.10.1",
-    "openai": "^7.47.0"
+    "openai": "^7.47.0",
+    "undici": "^8.12.3"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^2.2.0",

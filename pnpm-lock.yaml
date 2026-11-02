@@ -13,7 +13,10 @@ importers:
         version: 2.10.1(@types/node@26.6.5)(@types/react@19.3.0)(supports-color@8.1.1)
       openai:
         specifier: ^7.47.0
-        version: 7.47.0
+        version: 7.47.0(undici@8.12.3)
+      undici:
+        specifier: ^8.12.3
+        version: 8.12.3
     devDependencies:
       '@raycast/eslint-config':
         specifier: ^2.2.0
@@ -1181,6 +1184,10 @@ packages:
   undici-types@8.9.0:
     resolution: {integrity: sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==}
 
+  undici@8.12.3:
+    resolution: {integrity: sha512-+fdndUTwBP86cVjihTp21hZHo7d6oj1c/47XPA3lL8mM0XHs+C4EkcjmgRsFnFk2f/UONGDy9ItBItmXsLOQHw==}
+    engines: {node: '>=22.19.0'}
+
   unicorn-magic@0.3.0:
     resolution: {integrity: sha512-+QBBXBCvifc56fsbuxZQ6Sic3wqqc3WWaqxs58gvJrcOuN83HGTCwz3oS5phzU9LthRNE9VrJCFCLUgHeeFnfA==}
     engines: {node: '>=18'}
@@ -2144,7 +2151,9 @@ snapshots:
       powershell-utils: 0.2.1
       wsl-utils: 1.0.1
 
-  openai@7.47.0: {}
+  openai@7.47.0(undici@8.12.3):
+    optionalDependencies:
+      undici: 8.12.3
 
   optionator@0.9.4:
     dependencies:
@@ -2284,6 +2293,8 @@ snapshots:
   typescript@5.9.3: {}
 
   undici-types@8.9.0: {}
+
+  undici@8.12.3: {}
 
   unicorn-magic@0.3.0: {}
 

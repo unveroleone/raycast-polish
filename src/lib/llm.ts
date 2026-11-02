@@ -1,6 +1,8 @@
 import { getPreferenceValues } from "@raycast/api";
+import { lookup } from "dns/promises";
 import { readFileSync } from "fs";
-import OpenAI from "openai";
+import OpenAI, { type ClientOptions } from "openai";
+import { fetch as undiciFetch, ProxyAgent } from "undici";
 
 const BASE_PROMPT = `You are a careful proofreader. The user message contains a piece of text. Fix it and return it.
 
@@ -63,12 +65,49 @@ function buildSystemPrompt(): string {
   return parts.join("\n\n");
 }
 
-function createClient(): OpenAI {
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
+
+// Node's built-in fetch ignores system proxy settings, so route requests through the proxy explicitly.
+async function proxyOptions(baseURL: string): Promise<Pick<ClientOptions, "fetch" | "fetchOptions">> {
+  const { proxyUrl } = getPreferenceValues<Preferences>();
+  const url = proxyUrl?.trim() || process.env.HTTPS_PROXY || process.env.https_proxy;
+  if (!url) return {};
+
+  let proxyHost: string;
+  try {
+    proxyHost = new URL(url).hostname;
+  } catch {
+    throw new Error(`Invalid proxy URL: ${url}`);
+  }
+
+  // Local providers are reached directly, never through the proxy.
+  try {
+    if (LOCAL_HOSTS.has(new URL(baseURL).hostname)) return {};
+  } catch {
+    // An invalid base URL is reported by the SDK itself.
+  }
+
+  // When the proxy host does not resolve (e.g. outside the network that needs it), connect directly.
+  try {
+    await lookup(proxyHost);
+  } catch {
+    return {};
+  }
+
+  return {
+    fetch: undiciFetch as unknown as ClientOptions["fetch"],
+    fetchOptions: { dispatcher: new ProxyAgent(url) } as ClientOptions["fetchOptions"],
+  };
+}
+
+async function createClient(): Promise<OpenAI> {
   const { baseUrl, apiKey } = getPreferenceValues<Preferences>();
+  const baseURL = baseUrl.trim().replace(/\/+$/, "");
   return new OpenAI({
-    baseURL: baseUrl.trim().replace(/\/+$/, ""),
+    baseURL,
     // Local providers (Ollama, LM Studio) do not need a key, but the SDK requires a non-empty value.
     apiKey: apiKey?.trim() || "not-needed",
+    ...(await proxyOptions(baseURL)),
   });
 }
 
@@ -89,7 +128,7 @@ export async function fixText(
   model: string,
   options: { onUpdate?: (partial: string) => void; signal?: AbortSignal } = {},
 ): Promise<string> {
-  const client = createClient();
+  const client = await createClient();
   const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
     { role: "system", content: buildSystemPrompt() },
     { role: "user", content: text },
