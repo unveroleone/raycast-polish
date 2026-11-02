@@ -1,0 +1,101 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "fix-writing",
+  "title": "Fix Writing",
+  "description": "Fix spelling and grammar of the selected text with any OpenAI-compatible provider and paste it back in place.",
+  "icon": "icon.png",
+  "author": "leo",
+  "categories": [
+    "Productivity"
+  ],
+  "license": "MIT",
+  "platforms": [
+    "macOS"
+  ],
+  "commands": [
+    {
+      "name": "fix-writing",
+      "title": "Fix Writing",
+      "subtitle": "Preview",
+      "description": "Fix the selected text, preview the result and press Enter to paste it in place.",
+      "mode": "view"
+    },
+    {
+      "name": "fix-writing-instant",
+      "title": "Fix Writing Instantly",
+      "subtitle": "No Preview",
+      "description": "Fix the selected text and replace it right away, without a preview.",
+      "mode": "no-view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "baseUrl",
+      "title": "Provider Base URL",
+      "description": "Any OpenAI-compatible endpoint, e.g. https://api.openai.com/v1, https://api.deepseek.com/v1, https://openrouter.ai/api/v1, http://localhost:11434/v1",
+      "type": "textfield",
+      "required": true,
+      "default": "https://api.openai.com/v1",
+      "placeholder": "https://api.openai.com/v1"
+    },
+    {
+      "name": "apiKey",
+      "title": "API Key",
+      "description": "API key for the provider. Leave empty for local providers like Ollama or LM Studio.",
+      "type": "password",
+      "required": false,
+      "placeholder": "sk-..."
+    },
+    {
+      "name": "models",
+      "title": "Models",
+      "description": "Comma-separated model IDs. The first one is the default, the others show up in the preview under Change Model.",
+      "type": "textfield",
+      "required": true,
+      "default": "gpt-4o-mini",
+      "placeholder": "gpt-4o-mini, deepseek-chat"
+    },
+    {
+      "name": "humanWriting",
+      "title": "Writing Style",
+      "label": "Human writing rules",
+      "description": "Also remove em dashes, AI-sounding words and filler phrases while fixing.",
+      "type": "checkbox",
+      "required": false,
+      "default": true
+    },
+    {
+      "name": "instructions",
+      "title": "Extra Instructions",
+      "description": "Optional rules added to the built-in prompt, e.g. 'Use Swiss German spelling (ss instead of ß). Keep it casual.'",
+      "type": "textfield",
+      "required": false,
+      "placeholder": "Use British English spelling."
+    },
+    {
+      "name": "instructionsFile",
+      "title": "Instructions File",
+      "description": "Optional .md or .txt file with longer writing rules (a style guide). Appended to the built-in prompt.",
+      "type": "file",
+      "required": false
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^2.10.1",
+    "openai": "^7.47.0"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.2.0",
+    "@types/node": "26.6.5",
+    "@types/react": "19.3.0",
+    "eslint": "^9.39.4",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint"
+  }
+}
