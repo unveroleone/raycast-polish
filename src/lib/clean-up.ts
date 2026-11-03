@@ -45,9 +45,11 @@ function hasGutter(lines: string[]): boolean {
   return !withGutter.some((line) => BAR_LATER.test(line.trimStart()));
 }
 
+// Some apps (chat apps, rich text fields) separate lines with Unicode line and paragraph separators instead of "\n".
+const normalizeLineBreaks = (text: string) => text.replace(/\r\n?|\u2028|\u0085/g, "\n").replace(/\u2029/g, "\n\n");
+
 const normalizedLines = (text: string) =>
-  text
-    .replace(/\r\n?/g, "\n")
+  normalizeLineBreaks(text)
     .split("\n")
     .map((line) => normalizeIndent(line.replace(/\s+$/, "")));
 
@@ -154,6 +156,6 @@ export function cleanUpText(input: string): string {
     ? out.map((line, i) => (i > 0 && isParagraph[i] && isParagraph[i - 1] ? `\n${line}` : line))
     : out;
 
-  const trailingNewlines = input.match(/\n*$/)![0];
+  const trailingNewlines = normalizeLineBreaks(input).match(/\n*$/)![0];
   return result.join("\n").replace(/^\n+|\n+$/g, "") + trailingNewlines;
 }
