@@ -1,20 +1,27 @@
 <p align="center">
-  <img src="media/banner.svg" alt="Polish: select text, press a hotkey, the fixed text is pasted back in place" width="100%">
+  <img src="assets/icon.png" width="120" alt="Polish icon">
+</p>
+
+<h1 align="center">Polish</h1>
+
+<p align="center">
+  <em>Select the text. Press the hotkey. It's fixed right where you typed it.</em>
 </p>
 
 <p align="center">
-  <a href="https://www.raycast.com"><img src="https://img.shields.io/badge/Raycast-extension-FF6363?logo=raycast&logoColor=white" alt="Raycast extension"></a>
-  <img src="https://img.shields.io/badge/macOS-only-000000?logo=apple&logoColor=white" alt="macOS">
-  <img src="https://img.shields.io/badge/API-OpenAI--compatible-6366f1" alt="OpenAI-compatible">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-34d399" alt="MIT license"></a>
+  <img src="https://img.shields.io/badge/raycast-extension-111111?style=flat-square" alt="Raycast extension">
+  <img src="https://img.shields.io/badge/platform-macOS-111111?style=flat-square" alt="macOS">
+  <img src="https://img.shields.io/badge/api-OpenAI--compatible-111111?style=flat-square" alt="OpenAI-compatible">
+  <img src="https://img.shields.io/badge/license-MIT-111111?style=flat-square" alt="MIT license">
 </p>
 
-<p align="center">
-  <b>Select text anywhere. Press your hotkey. The fixed version replaces it.</b><br>
-  Works with OpenAI, DeepSeek, OpenRouter, Groq, Ollama or any other OpenAI-compatible API.
-</p>
+Polish is a Raycast extension for the messages you write all day. It fixes your typos and grammar, or cuts a long message down to the facts, and pastes the result over your selection. Use any OpenAI-compatible provider, including a model running on your own Mac.
 
----
+```text
+hey ih heise leo, kurze frage: hast du am dienstag zeit?
+
+Hey, ich heisse Leo. Hast du am Dienstag Zeit?
+```
 
 ## Why Polish
 
