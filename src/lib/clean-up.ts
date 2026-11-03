@@ -1,5 +1,5 @@
-// Cleans up text copied from a terminal: removes the shared left indent and joins hard-wrapped lines back into
-// sentences. Pure code, no AI. Keeps list items, blank lines, headings, tables and fenced code blocks.
+// Cleans up text copied from a terminal: removes quote bars and the shared left indent and joins hard-wrapped lines
+// back into sentences. Pure code, no AI. Keeps list items, blank lines, headings, tables and fenced code blocks.
 
 const LIST_ITEM = /^( *)([-*+•]|\d+[.)])\s+/;
 const FENCE = /^ *(```|~~~)/;
@@ -32,22 +32,41 @@ const indentOf = (line: string) => line.match(/^ */)![0].length;
 // Chat apps like Teams turn pasted indentation into non-breaking spaces. Treat them as normal spaces.
 const normalizeIndent = (line: string) => line.replace(/^[ \u00a0]+/, (m) => " ".repeat(m.length));
 
-// Strong signal for text copied from a terminal: every line after the first is indented by at least two spaces.
-// Normal prose from a mail or chat app never looks like that.
-export function looksLikeTerminalCopy(text: string): boolean {
-  const rest = text
-    .replace(/\r\n?/g, "\n")
-    .split("\n")
-    .filter((line) => line.trim())
-    .slice(1);
-  return rest.length >= 2 && rest.every((line) => /^[ \u00a0]{2,}/.test(line));
+// Vertical bars that terminals draw left of quoted or highlighted blocks, e.g. "▎" in Claude Code.
+const GUTTER_CHARS = "▎▍▌▋▊▉▏▕│┃║╎╏┆┇┊┋";
+const GUTTER = new RegExp(`^( *)[${GUTTER_CHARS}] ?`);
+const BAR_LATER = new RegExp(`.[${GUTTER_CHARS}]`);
+
+// True when most lines start with a bar. Lines with a second bar are table rows ("│ a │ b │"), not a quote.
+function hasGutter(lines: string[]): boolean {
+  const content = lines.filter((line) => line.trim());
+  const withGutter = content.filter((line) => GUTTER.test(line));
+  if (withGutter.length < 2 || withGutter.length < content.length / 2) return false;
+  return !withGutter.some((line) => BAR_LATER.test(line.trimStart()));
 }
 
-export function cleanUpText(input: string): string {
-  const lines = input
+const normalizedLines = (text: string) =>
+  text
     .replace(/\r\n?/g, "\n")
     .split("\n")
     .map((line) => normalizeIndent(line.replace(/\s+$/, "")));
+
+const toLines = (text: string) => {
+  const lines = normalizedLines(text);
+  return hasGutter(lines) ? lines.map((line) => line.replace(GUTTER, "$1").replace(/\s+$/, "")) : lines;
+};
+
+// Strong signal for text copied from a terminal: lines carry a quote bar, or every line after the first is indented
+// by at least two spaces. Normal prose from a mail or chat app never looks like that.
+export function looksLikeTerminalCopy(text: string): boolean {
+  const lines = normalizedLines(text);
+  if (hasGutter(lines)) return true;
+  const rest = lines.filter((line) => line.trim()).slice(1);
+  return rest.length >= 2 && rest.every((line) => /^ {2,}/.test(line));
+}
+
+export function cleanUpText(input: string): string {
+  const lines = toLines(input);
 
   const contentLines = lines.filter((line) => line.trim());
   if (contentLines.length === 0) return input;
