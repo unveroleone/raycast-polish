@@ -1,6 +1,6 @@
 import { closeMainWindow, showHUD, showToast, Toast } from "@raycast/api";
 import { deliver } from "./lib/deliver";
-import { fixText, getModels } from "./lib/llm";
+import { getModels, transformText } from "./lib/llm";
 import { readSelection } from "./lib/selection";
 
 export default async function Command() {
@@ -15,7 +15,7 @@ export default async function Command() {
   try {
     const model = getModels()[0];
     await showToast({ style: Toast.Style.Animated, title: `Fixing with ${model}...` });
-    const fixed = await fixText(text, model);
+    const fixed = await transformText(text, model, "fix");
     await deliver(fixed, fixed === text ? "Already correct" : "Text fixed");
   } catch (error) {
     await showHUD(`Fix failed: ${(error as Error).message}`);

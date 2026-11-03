@@ -28,6 +28,13 @@
       "mode": "no-view"
     },
     {
+      "name": "shorten-text",
+      "title": "Shorten Text",
+      "subtitle": "Key Facts Only",
+      "description": "Cut the selected text down to its key facts, preview it and press Enter to paste it in place.",
+      "mode": "view"
+    },
+    {
       "name": "clean-up-text",
       "title": "Clean up Text",
       "subtitle": "Terminal Copy",
