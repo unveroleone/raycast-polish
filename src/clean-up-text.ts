@@ -1,16 +1,11 @@
-import { closeMainWindow, getSelectedText, showHUD } from "@raycast/api";
+import { closeMainWindow, showHUD } from "@raycast/api";
 import { cleanUpText } from "./lib/clean-up";
 import { deliver } from "./lib/deliver";
+import { readSelection } from "./lib/selection";
 
 export default async function Command() {
-  let text: string;
-  try {
-    text = await getSelectedText();
-  } catch {
-    await showHUD("No text selected");
-    return;
-  }
-  if (!text.trim()) {
+  const text = await readSelection();
+  if (!text) {
     await showHUD("No text selected");
     return;
   }

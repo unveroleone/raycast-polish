@@ -1,7 +1,8 @@
-import { Action, ActionPanel, Detail, getSelectedText, Icon, Keyboard, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, Detail, Icon, Keyboard, showToast, Toast } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import { deliver } from "./lib/deliver";
 import { fixText, getModels } from "./lib/llm";
+import { readSelection } from "./lib/selection";
 
 function toMarkdown(fixed: string, original: string): string {
   // Two trailing spaces keep single line breaks visible in the markdown preview.
@@ -39,9 +40,9 @@ export default function Command() {
   };
 
   useEffect(() => {
-    getSelectedText()
+    readSelection()
       .then((text) => {
-        if (!text.trim()) throw new Error("empty");
+        if (!text) throw new Error("empty");
         setOriginal(text);
       })
       .catch(() => {

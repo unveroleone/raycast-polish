@@ -19,11 +19,25 @@ interface Block {
 
 const indentOf = (line: string) => line.match(/^ */)![0].length;
 
+// Chat apps like Teams turn pasted indentation into non-breaking spaces. Treat them as normal spaces.
+const normalizeIndent = (line: string) => line.replace(/^[ \u00a0]+/, (m) => " ".repeat(m.length));
+
+// Strong signal for text copied from a terminal: every line after the first is indented by at least two spaces.
+// Normal prose from a mail or chat app never looks like that.
+export function looksLikeTerminalCopy(text: string): boolean {
+  const rest = text
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .filter((line) => line.trim())
+    .slice(1);
+  return rest.length >= 2 && rest.every((line) => /^[ \u00a0]{2,}/.test(line));
+}
+
 export function cleanUpText(input: string): string {
   const lines = input
     .replace(/\r\n?/g, "\n")
     .split("\n")
-    .map((line) => line.replace(/\s+$/, ""));
+    .map((line) => normalizeIndent(line.replace(/\s+$/, "")));
 
   const contentLines = lines.filter((line) => line.trim());
   if (contentLines.length === 0) return input;

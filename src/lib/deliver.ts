@@ -1,7 +1,7 @@
 import { Clipboard, closeMainWindow, getPreferenceValues, showHUD } from "@raycast/api";
 import { execFile } from "child_process";
 
-type Target = "editable" | "readonly" | "unknown";
+type Target = "editable" | "unknown";
 
 // Asks the accessibility API whether the focused element of the frontmost app accepts text.
 const FOCUS_SCRIPT = `
@@ -18,7 +18,6 @@ tell application "System Events"
   try
     if value of attribute "AXEditableAncestor" of focusedElement is not missing value then return "editable"
   end try
-  if elementRole is in {"AXStaticText", "AXScrollArea", "AXList", "AXTable", "AXOutline", "AXImage", "AXButton", "AXLink", "AXWindow"} then return "readonly"
   return "unknown"
 end tell`;
 
@@ -26,24 +25,19 @@ function focusedTarget(): Promise<Target> {
   return new Promise((resolve) => {
     execFile("osascript", ["-e", FOCUS_SCRIPT], { timeout: 2000 }, (error, stdout) => {
       const result = stdout?.trim();
-      resolve(!error && (result === "editable" || result === "readonly") ? result : "unknown");
+      resolve(!error && result === "editable" ? "editable" : "unknown");
     });
   });
 }
 
-// Pastes the text over the selection. Falls back to the clipboard when there is no text field to paste into or the
-// paste fails. When the target cannot be detected, it pastes and copies, so the text is never lost.
+// Always pastes over the selection. Editors with custom text views (Sublime Text, terminals, some Electron apps) do not
+// report a text field to macOS, so a missing text field is no reason to skip the paste. Whenever the target is not a
+// known text field, or the paste fails, the text is copied as well, so it is never lost.
 export async function deliver(text: string, doneMessage: string): Promise<void> {
   const { alwaysCopy } = getPreferenceValues<Preferences>();
 
   await closeMainWindow();
   const target = await focusedTarget();
-
-  if (target === "readonly") {
-    await Clipboard.copy(text);
-    await showHUD(`${doneMessage}. No text field to paste into, copied to clipboard`);
-    return;
-  }
 
   const copy = alwaysCopy || target === "unknown";
   // Copy before pasting: paste may restore the previous clipboard afterwards, which then is our text.

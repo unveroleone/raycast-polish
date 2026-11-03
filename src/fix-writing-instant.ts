@@ -1,16 +1,11 @@
-import { closeMainWindow, getSelectedText, showHUD, showToast, Toast } from "@raycast/api";
+import { closeMainWindow, showHUD, showToast, Toast } from "@raycast/api";
 import { deliver } from "./lib/deliver";
 import { fixText, getModels } from "./lib/llm";
+import { readSelection } from "./lib/selection";
 
 export default async function Command() {
-  let text: string;
-  try {
-    text = await getSelectedText();
-  } catch {
-    await showHUD("No text selected");
-    return;
-  }
-  if (!text.trim()) {
+  const text = await readSelection();
+  if (!text) {
     await showHUD("No text selected");
     return;
   }

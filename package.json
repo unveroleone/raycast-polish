@@ -83,7 +83,7 @@
       "name": "alwaysCopy",
       "title": "Clipboard",
       "label": "Also copy the result to the clipboard",
-      "description": "Copy every result to the clipboard in addition to pasting it. Without this, it only copies when there is no text field to paste into or pasting fails.",
+      "description": "Copy every result to the clipboard in addition to pasting it. Without this, it only copies when it cannot confirm a text field or pasting fails.",
       "type": "checkbox",
       "required": false,
       "default": false

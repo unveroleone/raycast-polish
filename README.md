@@ -38,7 +38,7 @@ Most AI writing extensions for Raycast show the result in a window, leave the co
     </td>
     <td width="50%" valign="top">
       <h3>Never loses your text</h3>
-      If there is no text field to paste into, or pasting fails, the result goes to your clipboard instead. A short message tells you which one happened.
+      Whenever Polish cannot confirm a text field, or pasting fails, the result also goes to your clipboard. A short message tells you which one happened.
     </td>
   </tr>
 </table>
@@ -97,23 +97,24 @@ Put several models in one comma-separated list. The first one is the default.
 | API Key | empty | Leave empty for Ollama or LM Studio |
 | Models | `gpt-4o-mini` | Comma-separated, first one is the default |
 | Proxy URL | empty | Only for networks that block direct connections, e.g. `http://proxy.example.com:8080`. Skipped automatically when the proxy cannot be reached |
-| Clipboard | off | Copy every result too, not only when pasting is not possible |
+| Clipboard | off | Copy every result too, not only when Polish cannot confirm a text field |
 | Writing Style | on | Human writing rules: no em dashes, no AI-sounding words, Swiss `ss` instead of `ß` |
 | Extra Instructions | empty | One-line rule, e.g. `Use British English spelling.` |
 | Instructions File | empty | A `.md` or `.txt` style guide for longer rules |
 
 ## How pasting works
 
-Before pasting, Polish asks macOS (through the accessibility API) what has focus in the app you selected the text in.
+Polish always pastes over your selection. Before that, it asks macOS (through the accessibility API) whether a text field has focus in the app you selected the text in.
 
 | Focused element | What happens |
 | --- | --- |
 | Text field, text area or editable web content | Pasted over your selection |
-| Read-only element, like a label, list or button | Copied to the clipboard instead |
-| Unclear, like a web page or a custom control | Pasted and copied, so it is never lost |
+| Anything else, e.g. Sublime Text, a terminal or a web page | Pasted and also copied, so it is never lost |
 | Pasting fails | Copied to the clipboard |
 
-Raycast needs accessibility access for this (System Settings > Privacy & Security > Accessibility). It already uses that permission to read your selection.
+Editors like Sublime Text draw their own text view and do not report it as a text field, which is why Polish still pastes there. Raycast needs accessibility access for this (System Settings > Privacy & Security > Accessibility). It already uses that permission to read your selection.
+
+When **Fix Writing** gets text that was copied from a terminal (every line indented, hard line breaks), it runs **Clean up Text** on it first, so the model sees real paragraphs.
 
 ## Privacy
 
