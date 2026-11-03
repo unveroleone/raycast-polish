@@ -29,8 +29,14 @@ interface Block {
 
 const indentOf = (line: string) => line.match(/^ */)![0].length;
 
-// Chat apps like Teams turn pasted indentation into non-breaking spaces. Treat them as normal spaces.
-const normalizeIndent = (line: string) => line.replace(/^[ \u00a0]+/, (m) => " ".repeat(m.length));
+// Non-breaking and other special spaces (Teams indents, terminal prompts) become normal spaces. The ideographic space
+// U+3000 stays, it is regular CJK typography.
+const SPECIAL_SPACES = /[\u00a0\u2000-\u200a\u202f\u205f]/g;
+// Invisible characters: zero-width space, word joiner, byte order mark, soft hyphen. The zero-width joiner and
+// variation selectors are kept, emojis are built from them.
+const INVISIBLE = /[\u200b\u2060\ufeff\u00ad]/g;
+// Prompt and status symbols terminals put at the start of a line, e.g. "❯" (prompt), "⏺" and "⎿" in Claude Code.
+const MARKER = /^( *)[❯⏺⎿✻✳⏵▸➜➤] ?/;
 
 // Vertical bars that terminals draw left of quoted or highlighted blocks, e.g. "▎" in Claude Code.
 const GUTTER_CHARS = "▎▍▌▋▊▉▏▕│┃║╎╏┆┇┊┋";
@@ -50,11 +56,15 @@ const normalizeLineBreaks = (text: string) => text.replace(/\r\n?|\u2028|\u0085/
 
 const normalizedLines = (text: string) =>
   normalizeLineBreaks(text)
+    .replace(SPECIAL_SPACES, " ")
+    .replace(INVISIBLE, "")
     .split("\n")
-    .map((line) => normalizeIndent(line.replace(/\s+$/, "")));
+    .map((line) => line.replace(/\s+$/, ""));
+
+const stripMarker = (line: string) => line.replace(MARKER, "$1").replace(/\s+$/, "");
 
 const toLines = (text: string) => {
-  const lines = normalizedLines(text);
+  const lines = normalizedLines(text).map(stripMarker);
   return hasGutter(lines) ? lines.map((line) => line.replace(GUTTER, "$1").replace(/\s+$/, "")) : lines;
 };
 
@@ -62,7 +72,8 @@ const toLines = (text: string) => {
 // by at least two spaces. Normal prose from a mail or chat app never looks like that.
 export function looksLikeTerminalCopy(text: string): boolean {
   const lines = normalizedLines(text);
-  if (hasGutter(lines)) return true;
+  if (lines.some((line) => MARKER.test(line))) return true;
+  if (hasGutter(lines.map(stripMarker))) return true;
   const rest = lines.filter((line) => line.trim()).slice(1);
   return rest.length >= 2 && rest.every((line) => /^ {2,}/.test(line));
 }

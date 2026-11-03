@@ -57,7 +57,7 @@ Most AI writing extensions for Raycast show the result in a window, leave the co
 | **Fix Writing** | Shows the fixed text above your original. `Enter` pastes it, `Cmd+R` retries, `Cmd+M` switches the model. |
 | **Fix Writing Instantly** | No window. Fixes the selection with your default model and replaces it. Best on a hotkey. |
 | **Shorten Text** | Cuts the selection down to its key facts: requests, questions, dates, names, links. Drops small talk, hedging and repetition, keeps your voice and language. Shows the word count before and after, `Enter` pastes it. |
-| **Clean up Text** | For text copied from a terminal. Removes quote bars like `▎` and the extra indent, and joins hard-wrapped lines back into sentences, while keeping lists, tables and code blocks. Runs in code without AI, so it is instant and never changes a word. |
+| **Clean up Text** | For text copied from a terminal. Removes quote bars like `▎`, prompt symbols like `❯`, odd spaces, invisible characters and the extra indent, and joins hard-wrapped lines back into sentences, while keeping lists, tables and code blocks. Runs in code without AI, so it is instant and never changes a word. |
 
 ```text
 Before, copied from a terminal:
