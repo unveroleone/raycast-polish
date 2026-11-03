@@ -17,7 +17,7 @@ const widthOf = (text: string) => text.length + (text.match(CJK_CHAR)?.length ??
 // Width of the first word of a line. CJK has no spaces, so a single character is the smallest unit that can wrap.
 const firstWordWidth = (line: string) => {
   const trimmed = line.trim();
-  return CJK_START.test(trimmed) ? 2 : trimmed.split(/\s+/)[0].length;
+  return CJK_START.test(trimmed) ? 2 : widthOf(trimmed.split(/\s+/)[0]);
 };
 
 interface Block {
