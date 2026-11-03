@@ -9,6 +9,16 @@ const COLUMNS = /\S {2,}\S/;
 // Chinese, Japanese and Korean have no spaces between words, so wrapped lines join without one.
 const CJK_END = /[\u2e80-\u9fff\uac00-\ud7af\uf900-\ufaff\uff00-\uffef]$/;
 const CJK_START = /^[\u2e80-\u9fff\uac00-\ud7af\uf900-\ufaff\uff00-\uffef]/;
+const CJK_CHAR = /[\u2e80-\u9fff\uac00-\ud7af\uf900-\ufaff\uff00-\uffef]/g;
+
+// Width in terminal columns: CJK characters take two columns.
+const widthOf = (text: string) => text.length + (text.match(CJK_CHAR)?.length ?? 0);
+
+// Width of the first word of a line. CJK has no spaces, so a single character is the smallest unit that can wrap.
+const firstWordWidth = (line: string) => {
+  const trimmed = line.trim();
+  return CJK_START.test(trimmed) ? 2 : trimmed.split(/\s+/)[0].length;
+};
 
 interface Block {
   indent: number;
@@ -50,30 +60,41 @@ export function cleanUpText(input: string): string {
     i === firstIndex ? line.trimStart() : line.slice(Math.min(minIndent, indentOf(line))),
   );
 
-  // Hard-wrapped lines end close to the terminal width. A shorter line ends its paragraph on purpose.
-  const maxLength = Math.max(...dedented.map((line) => line.length));
-  const wrapThreshold = Math.max(40, Math.floor(maxLength * 0.6));
+  // The longest line approximates the terminal width. A line was wrapped by the terminal only if the next word would
+  // not have fit on it. If it would have fit, the line break was intentional (e.g. a paragraph end in text whose
+  // blank lines got lost, which happens when copying from Teams).
+  const maxLength = Math.max(...dedented.map(widthOf));
+  // Short texts have no real terminal width, so nothing counts as wrapped there.
+  const wasWrapped = (previousLength: number, next: string) =>
+    maxLength >= 60 && previousLength >= maxLength * 0.6 && previousLength + 1 + firstWordWidth(next) > maxLength;
 
   // An odd number of fences means the selection starts or ends inside a code block. Only dedent then.
   const canMerge = dedented.filter((line) => FENCE.test(line)).length % 2 === 0;
 
   const out: string[] = [];
+  // Marks plain paragraph lines in `out`, used to put lost blank lines back between paragraphs.
+  const isParagraph: boolean[] = [];
+  let merged = false;
   let block: Block | undefined;
   let inFence = false;
+  const push = (line: string, paragraph = false) => {
+    out.push(line);
+    isParagraph.push(paragraph);
+  };
 
   for (const line of dedented) {
     if (FENCE.test(line)) {
       inFence = !inFence;
-      out.push(line);
+      push(line);
       block = undefined;
       continue;
     }
     if (inFence) {
-      out.push(line);
+      push(line);
       continue;
     }
     if (!line.trim()) {
-      out.push("");
+      push("");
       block = undefined;
       continue;
     }
@@ -88,23 +109,32 @@ export function cleanUpText(input: string): string {
       // Continuation of a list item: indented under the item's text, like "  - text\n    more text".
       const listContinuation = indent > block.indent && indent >= block.textIndent;
       // Continuation of a paragraph: same indent and the previous line was wrapped at the width.
-      const paragraphContinuation = indent === block.indent && block.lastLength >= wrapThreshold;
+      const paragraphContinuation = indent === block.indent && wasWrapped(block.lastLength, line);
 
       if (listContinuation || paragraphContinuation) {
         const previous = out[out.length - 1];
         const next = line.trim();
         out[out.length - 1] = previous + (CJK_END.test(previous) && CJK_START.test(next) ? "" : " ") + next;
-        block.lastLength = line.length;
+        block.lastLength = widthOf(line);
+        merged = true;
         continue;
       }
     }
 
-    out.push(line);
+    push(line, !listItem && !structural && !columnar);
     block = structural
       ? undefined
-      : { indent, textIndent: listItem ? listItem[0].length : indent, lastLength: line.length, columnar };
+      : { indent, textIndent: listItem ? listItem[0].length : indent, lastLength: widthOf(line), columnar };
   }
 
+  // Some apps (Teams) drop the blank lines when the selection is copied. If the text had none but was clearly wrapped,
+  // separate the paragraphs again.
+  const content = dedented.slice(firstIndex, dedented.findLastIndex((line) => line.trim()) + 1);
+  const lostBlankLines = merged && !content.some((line) => !line.trim());
+  const result = lostBlankLines
+    ? out.map((line, i) => (i > 0 && isParagraph[i] && isParagraph[i - 1] ? `\n${line}` : line))
+    : out;
+
   const trailingNewlines = input.match(/\n*$/)![0];
-  return out.join("\n").replace(/^\n+|\n+$/g, "") + trailingNewlines;
+  return result.join("\n").replace(/^\n+|\n+$/g, "") + trailingNewlines;
 }
