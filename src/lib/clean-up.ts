@@ -46,8 +46,12 @@ const BAR_LATER = new RegExp(`.[${GUTTER_CHARS}]`);
 // True when most lines start with a bar. Lines with a second bar are table rows ("│ a │ b │"), not a quote.
 function hasGutter(lines: string[]): boolean {
   const content = lines.filter((line) => line.trim());
-  const withGutter = content.filter((line) => GUTTER.test(line));
-  if (withGutter.length < 2 || withGutter.length < content.length / 2) return false;
+  // A terminal selection often starts mid-line, so the first line lacks the bar. Count from the other lines then.
+  const counted = content.length > 1 && !GUTTER.test(content[0]) ? content.slice(1) : content;
+  const withGutter = counted.filter((line) => GUTTER.test(line));
+  // A single bar line only counts when it is all there is to count, e.g. a two-line selection.
+  if (withGutter.length === 0 || (withGutter.length < 2 && withGutter.length < counted.length)) return false;
+  if (withGutter.length < counted.length / 2) return false;
   return !withGutter.some((line) => BAR_LATER.test(line.trimStart()));
 }
 
