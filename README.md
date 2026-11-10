@@ -41,7 +41,7 @@ Most AI writing extensions for Raycast show the result in a window, leave the co
   <tr>
     <td width="50%" valign="top">
       <h3>Reads like you wrote it</h3>
-      Optional human writing rules strip em dashes, words like "crucial" or "delve" and empty filler. In messages they drop openers like "Quick question:". Your tone and language stay.
+      Optional human writing rules strip em dashes, words like "crucial" or "delve" and empty filler. In messages they drop openers like "Quick question:". Your tone and language stay. Swiss German text is recognized and fixed as Swiss German, never turned into Standard German, and can follow your own dialect rules.
     </td>
     <td width="50%" valign="top">
       <h3>Never loses your text</h3>
@@ -108,6 +108,7 @@ Put several models in one comma-separated list. The first one is the default.
 | Clipboard | off | Copy every result too, not only when Polish cannot confirm a text field |
 | Status Messages | on | Show the progress and success messages. Errors and the clipboard fallback always show |
 | Writing Style | on | Human writing rules: no em dashes, no AI-sounding words, Swiss `ss` instead of `ß` |
+| Swiss German Style | empty | Your Swiss German rules: a `.md` file, a skill's `SKILL.md` or a skill exported as `.zip`. A skill's `references` folder is included. Used instead of the human writing rules when the text is Swiss German |
 | Extra Instructions | empty | One-line rule, e.g. `Use British English spelling.` |
 | Instructions File | empty | A `.md` or `.txt` style guide for longer rules |
 

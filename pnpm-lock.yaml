@@ -11,6 +11,9 @@ importers:
       '@raycast/api':
         specifier: ^2.10.1
         version: 2.10.1(@types/node@26.6.5)(@types/react@19.3.0)(supports-color@8.1.1)
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
       openai:
         specifier: ^7.47.0
         version: 7.47.0(undici@8.12.3)
@@ -753,6 +756,9 @@ packages:
     peerDependenciesMeta:
       picomatch:
         optional: true
+
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
   figures@6.1.0:
     resolution: {integrity: sha512-d+l3qxjSesT4V7v2fh+QnmFnUWv9lSpjarhShNTgBOfA0ttejbQUAlHLitbjkoRiDulW0OPoQPYIGhIC8ohejg==}
@@ -1969,6 +1975,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
       picomatch: 4.0.7
+
+  fflate@0.8.3: {}
 
   figures@6.1.0:
     dependencies:

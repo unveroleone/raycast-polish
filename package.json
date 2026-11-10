@@ -105,6 +105,13 @@
       "default": true
     },
     {
+      "name": "swissGermanStyle",
+      "title": "Swiss German Style",
+      "description": "Optional Swiss German writing rules: a .md file, a skill's SKILL.md or a skill exported as .zip. A skill's references folder is included. Used instead of the human writing rules whenever the text is Swiss German.",
+      "type": "file",
+      "required": false
+    },
+    {
       "name": "instructions",
       "title": "Extra Instructions",
       "description": "Optional rules added to the built-in prompt, e.g. 'Use Swiss German spelling (ss instead of ß). Keep it casual.'",
@@ -122,6 +129,7 @@
   ],
   "dependencies": {
     "@raycast/api": "^2.10.1",
+    "fflate": "^0.8.3",
     "openai": "^7.47.0",
     "undici": "^8.12.3"
   },

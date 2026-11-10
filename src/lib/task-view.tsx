@@ -1,7 +1,7 @@
 import { Action, ActionPanel, Detail, Icon, Keyboard, showToast, Toast } from "@raycast/api";
 import { useEffect, useRef, useState } from "react";
 import { deliver } from "./deliver";
-import { getModels, type Task, transformText } from "./llm";
+import { getModels, isSwissGermanText, type Task, transformText } from "./llm";
 import { readSelection } from "./selection";
 
 const LABELS: Record<
@@ -130,12 +130,15 @@ export function TaskView({ task }: { task: Task }) {
       : "";
 
   const canPaste = !isLoading && !error && result.length > 0;
+  const title = [labels.title, original !== undefined && isSwissGermanText(original) && "Swiss German", model]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <Detail
       isLoading={isLoading}
       markdown={markdown}
-      navigationTitle={model ? `${labels.title} · ${model}` : labels.title}
+      navigationTitle={title}
       actions={
         <ActionPanel>
           {canPaste && (
