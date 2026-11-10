@@ -1,4 +1,4 @@
-import { closeMainWindow, showHUD, showToast, Toast } from "@raycast/api";
+import { closeMainWindow, getPreferenceValues, showHUD, showToast, Toast } from "@raycast/api";
 import { deliver } from "./lib/deliver";
 import { getModels, transformText } from "./lib/llm";
 import { readSelection } from "./lib/selection";
@@ -14,7 +14,9 @@ export default async function Command() {
 
   try {
     const model = getModels()[0];
-    await showToast({ style: Toast.Style.Animated, title: `Fixing with ${model}...` });
+    if (getPreferenceValues<Preferences>().statusMessages) {
+      await showToast({ style: Toast.Style.Animated, title: `Fixing with ${model}...` });
+    }
     const fixed = await transformText(text, model, "fix");
     await deliver(fixed, fixed === text ? "Already correct" : "Text fixed");
   } catch (error) {

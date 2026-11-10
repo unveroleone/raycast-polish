@@ -34,7 +34,7 @@ function focusedTarget(): Promise<Target> {
 // report a text field to macOS, so a missing text field is no reason to skip the paste. Whenever the target is not a
 // known text field, or the paste fails, the text is copied as well, so it is never lost.
 export async function deliver(text: string, doneMessage: string): Promise<void> {
-  const { alwaysCopy } = getPreferenceValues<Preferences>();
+  const { alwaysCopy, statusMessages } = getPreferenceValues<Preferences>();
 
   await closeMainWindow();
   const target = await focusedTarget();
@@ -51,5 +51,5 @@ export async function deliver(text: string, doneMessage: string): Promise<void> 
     return;
   }
 
-  await showHUD(copy ? `${doneMessage}. Also copied to clipboard` : doneMessage);
+  if (statusMessages) await showHUD(copy ? `${doneMessage}. Also copied to clipboard` : doneMessage);
 }

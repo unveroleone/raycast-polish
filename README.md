@@ -106,6 +106,7 @@ Put several models in one comma-separated list. The first one is the default.
 | Models | `gpt-4o-mini` | Comma-separated, first one is the default |
 | Proxy URL | empty | Only for networks that block direct connections, e.g. `http://proxy.example.com:8080`. Skipped automatically when the proxy cannot be reached |
 | Clipboard | off | Copy every result too, not only when Polish cannot confirm a text field |
+| Status Messages | on | Show the progress and success messages. Errors and the clipboard fallback always show |
 | Writing Style | on | Human writing rules: no em dashes, no AI-sounding words, Swiss `ss` instead of `ß` |
 | Extra Instructions | empty | One-line rule, e.g. `Use British English spelling.` |
 | Instructions File | empty | A `.md` or `.txt` style guide for longer rules |

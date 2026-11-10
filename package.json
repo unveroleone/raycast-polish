@@ -96,6 +96,15 @@
       "default": false
     },
     {
+      "name": "statusMessages",
+      "title": "Status Messages",
+      "label": "Show progress and success messages",
+      "description": "Show the progress message while fixing and the message when the text was pasted. Errors and the clipboard fallback always show.",
+      "type": "checkbox",
+      "required": false,
+      "default": true
+    },
+    {
       "name": "instructions",
       "title": "Extra Instructions",
       "description": "Optional rules added to the built-in prompt, e.g. 'Use Swiss German spelling (ss instead of ß). Keep it casual.'",
