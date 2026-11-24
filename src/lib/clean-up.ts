@@ -160,7 +160,8 @@ export function cleanUpText(input: string): string {
       }
     }
 
-    push(line, !listItem && !structural && !columnar);
+    // Lines that start with a symbol are separate items already, so lost blank lines are not put back around them.
+    push(line, !listItem && !startsItem[i] && !structural && !columnar);
     block = structural
       ? undefined
       : { indent, textIndent: listItem ? listItem[0].length : indent, lastLength: widthOf(line), columnar };
