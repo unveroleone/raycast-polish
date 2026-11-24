@@ -145,6 +145,7 @@
     "build": "ray build",
     "dev": "ray develop",
     "fix-lint": "ray lint --fix",
-    "lint": "ray lint"
+    "lint": "ray lint",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test test/clean-up.test.ts"
   }
 }
