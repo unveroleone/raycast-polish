@@ -228,6 +228,21 @@ describe("6bd8c2d: special spaces, invisible characters, prompt symbols", () => 
       ),
     );
   });
+
+  test("puts no blank line before a tool result when the transcript has none", () => {
+    const input = lines(
+      "⏺ The cleanup joins lines that the terminal wrapped at its width, so a long",
+      "  paragraph reads as one line again.",
+      "  ⎿  Read 3 files",
+    );
+    assert.equal(
+      cleanUpText(input),
+      lines(
+        "The cleanup joins lines that the terminal wrapped at its width, so a long paragraph reads as one line again.",
+        " Read 3 files",
+      ),
+    );
+  });
 });
 
 describe("181b5fc: quote bar when the selection starts mid-line", () => {
