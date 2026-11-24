@@ -196,8 +196,7 @@ describe("6bd8c2d: special spaces, invisible characters, prompt symbols", () => 
     );
   });
 
-  // Bug: once the marker is gone, the indented tool result reads as a continuation of the tool call and is merged.
-  test("keeps a tool result on its own line when more transcript follows", { todo: true }, () => {
+  test("keeps a tool result on its own line when more transcript follows", () => {
     const input = lines(
       "⏺ Bash(pnpm build)",
       "  ⎿  built extension successfully",
@@ -205,7 +204,29 @@ describe("6bd8c2d: special spaces, invisible characters, prompt symbols", () => 
       "⏺ Bash(pnpm lint)",
       "  ⎿  ready - run ESLint",
     );
-    assert.match(cleanUpText(input), /^Bash\(pnpm build\)\n *built extension successfully\n/);
+    assert.equal(
+      cleanUpText(input),
+      lines("Bash(pnpm build)", "   built extension successfully", "", "Bash(pnpm lint)", "   ready - run ESLint"),
+    );
+  });
+
+  test("joins a wrapped response but not the tool result below it", () => {
+    const input = lines(
+      "❯ pnpm build",
+      "",
+      "⏺ The cleanup joins lines that the terminal wrapped at its width, so a long",
+      "  paragraph reads as one line again.",
+      "  ⎿  Read 3 files",
+    );
+    assert.equal(
+      cleanUpText(input),
+      lines(
+        "pnpm build",
+        "",
+        "The cleanup joins lines that the terminal wrapped at its width, so a long paragraph reads as one line again.",
+        "   Read 3 files",
+      ),
+    );
   });
 });
 
