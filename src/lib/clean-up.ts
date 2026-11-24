@@ -84,6 +84,9 @@ export function looksLikeTerminalCopy(text: string): boolean {
 
 export function cleanUpText(input: string): string {
   const lines = toLines(input);
+  // A line that started with a prompt or status symbol begins a new item, like a list bullet. In Claude Code the tool
+  // result ("  ⎿  ...") is indented under the tool call ("⏺ ..."), but it is not a continuation of it.
+  const startsItem = normalizedLines(input).map((line) => MARKER.test(line));
 
   const contentLines = lines.filter((line) => line.trim());
   if (contentLines.length === 0) return input;
@@ -118,7 +121,7 @@ export function cleanUpText(input: string): string {
     isParagraph.push(paragraph);
   };
 
-  for (const line of dedented) {
+  for (const [i, line] of dedented.entries()) {
     if (FENCE.test(line)) {
       inFence = !inFence;
       push(line);
@@ -141,7 +144,7 @@ export function cleanUpText(input: string): string {
 
     const columnar = COLUMNS.test(line.trim());
 
-    if (canMerge && block && !listItem && !structural && !columnar && !block.columnar) {
+    if (canMerge && block && !listItem && !startsItem[i] && !structural && !columnar && !block.columnar) {
       // Continuation of a list item: indented under the item's text, like "  - text\n    more text".
       const listContinuation = indent > block.indent && indent >= block.textIndent;
       // Continuation of a paragraph: same indent and the previous line was wrapped at the width.
