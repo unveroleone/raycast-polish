@@ -32,8 +32,12 @@ jobs:
       - name: Test
         run: pnpm test
 
+      # With CI=true, ray lint also requires a package-lock.json (a Raycast Store rule).
+      # This repo uses pnpm, so lint exactly as it runs locally.
       - name: Lint
         run: pnpm lint
+        env:
+          CI: false
 
       # The dist environment also runs tsc, the default dev build only bundles.
       - name: Build
