@@ -10,6 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/raycast-extension-111111?style=flat-square" alt="Raycast extension">
+  <a href="https://github.com/unveroleone/raycast-polish/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/unveroleone/raycast-polish/ci.yml?branch=main&style=flat-square&label=ci" alt="CI status"></a>
   <img src="https://img.shields.io/badge/platform-macOS-111111?style=flat-square" alt="macOS">
   <img src="https://img.shields.io/badge/api-OpenAI--compatible-111111?style=flat-square" alt="OpenAI-compatible">
   <img src="https://img.shields.io/badge/license-MIT-111111?style=flat-square" alt="MIT license">
